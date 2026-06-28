@@ -152,4 +152,4 @@ if st.button("🔍 Prediksi Sekarang", type="primary", use_container_width=True)
 # FOOTER
 # ──────────────────────────────────────────
 st.markdown("---")
-st.caption("Universitas Dian Nuswantoro · 2024")
+st.caption("Universitas Dian Nuswantoro · 2026")
