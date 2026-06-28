@@ -23,7 +23,9 @@ st.set_page_config(
 def load_artifacts():
     model  = joblib.load("best_churn_model.pkl")
     scaler = joblib.load("scaler.pkl")
-    return model, scaler
+    columns = joblib.load("feature_columns.pkl")
+    return model, scaler, columns
+model, scaler, feature_columns = load_artifacts()
 
 try:
     model, scaler = load_artifacts()
