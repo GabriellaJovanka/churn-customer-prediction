@@ -248,7 +248,7 @@ with tab1:
             **payment_ohe,
         }
 
-        input_df = pd.DataFrame([input_dict])
+        input_df.reindex(columns=feature_columns, fill_value=0)
 
         # 9. Scale
         input_scaled = scaler.transform(input_df)
