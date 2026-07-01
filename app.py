@@ -43,9 +43,16 @@ except FileNotFoundError:
 CITY_OPTIONS         = list(label_encoders['city'].classes_)
 SUBSCRIPTION_OPTIONS = list(label_encoders['subscription_type'].classes_)
  
-# coupon_code punya banyak missing value (~41%) di data asli -> opsi "Tidak Pakai Kupon"
-COUPON_NONE_LABEL = "Tidak Pakai Kupon"
-COUPON_OPTIONS = [COUPON_NONE_LABEL] + list(label_encoders['coupon_code'].classes_)
+# Saat training, missing value pada coupon_code diberi label eksplisit
+# "No Coupon" SEBELUM encoding (lihat notebook, cell 4c) — jadi "No Coupon"
+# adalah kelas asli yang dikenali label encoder, bukan nilai "nan" buatan.
+NO_COUPON_LABEL = "No Coupon"
+COUPON_NONE_LABEL = "Tidak Pakai Kupon"  # label yang ditampilkan ke user di form
+ 
+_coupon_classes = list(label_encoders['coupon_code'].classes_)
+# Tampilkan "Tidak Pakai Kupon" di posisi teratas dropdown, tanpa duplikasi
+# jika NO_COUPON_LABEL sudah ada di antara classes_.
+COUPON_OPTIONS = [COUPON_NONE_LABEL] + [c for c in _coupon_classes if c != NO_COUPON_LABEL]
  
 GENDER_OPTIONS      = ["Male", "Female", "Other"]
 COUNTRY_OPTIONS     = ["USA", "Germany", "India", "UK", "Bangladesh"]
@@ -151,7 +158,9 @@ if st.button("🔍 Prediksi Sekarang", type="primary", use_container_width=True)
         'total_spent': total_spent,
         'avg_order_value': avg_order_value,
         'discount_used': 1 if discount_used == "Ya" else 0,
-        'coupon_code': "nan" if coupon_code == COUPON_NONE_LABEL else coupon_code,
+        # Samakan persis dengan cara training: missing coupon -> "No Coupon",
+        # BUKAN string "nan" (yang tidak pernah ada di data training).
+        'coupon_code': NO_COUPON_LABEL if coupon_code == COUPON_NONE_LABEL else coupon_code,
         'support_tickets': support_tickets,
         'refund_requested': 1 if refund_requested == "Ya" else 0,
         'delivery_delay_days': delivery_delay_days,
